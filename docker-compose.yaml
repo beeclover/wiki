@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  minio:
+    image: minio/minio
+    volumes:
+      - ./data/minio_root:/minio_root:z
+      - ./data/certs:/root/.minio/certs:z
+    command: "minio server /minio_root"
+    env_file:
+      - ./.env
+      - ./.env.minio
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${HOSTNAME}
+  outline:
+    image: outlinewiki/outline:latest
+    command: sh -c "yarn sequelize:migrate --env production-ssl-disabled && yarn start"
+    environment:
+      - DATABASE_URL=postgres://postgres:${POSTGRESQL_PASSWORD}@DB_postgres:5432/wiki
+      - REDIS_URL=redis://WORK-wiki_redis:6379
+    env_file:
+      - ./.env
+      - ./.env.outline
+      - ./.env.slack
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${HOSTNAME}
+      labels:
+        - traefik.enable=true
+        ## HTTP Routers
+        - traefik.http.routers.202112__wiki.entrypoints=websecure
+        - traefik.http.routers.202112__wiki.rule=Host(`wiki.beeclover.pro`)
+        - traefik.http.routers.202112__wiki.tls.certresolver=leresolver
+        - traefik.http.services.202112__wiki.loadbalancer.server.port=3000
+  redis:
+    image: redis
+    volumes:
+      - redis:/data
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${HOSTNAME}
+
+########################### NETWORKS
+networks:
+  default:
+    external:
+      name: DB_work
+
+volumes:
+  redis:
