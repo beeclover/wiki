@@ -6,14 +6,30 @@ services:
     volumes:
       - ./data/minio_root:/minio_root:z
       - ./data/certs:/root/.minio/certs:z
-    command: "minio server /minio_root"
     env_file:
       - ./.env
       - ./.env.minio
+    command: minio server /minio_root --console-address ":9001"
     deploy:
       placement:
         constraints:
           - node.hostname == ${HOSTNAME}
+      labels:
+        - traefik.enable=true
+        # console
+        - traefik.http.routers.minio.entrypoints=websecure
+        - traefik.http.routers.minio.rule=Host(`minio.wiki.beeclover.pro`)
+        - traefik.http.routers.minio.tls.certresolver=leresolver
+        - traefik.http.routers.minio.service=minio-service
+        - traefik.http.services.minio-service.loadbalancer.server.port=9001
+        # api
+        - traefik.http.routers.minio-api.entrypoints=websecure
+        - traefik.http.routers.minio-api.rule=Host(`wiki.beeclover.pro`) &&
+          PathPrefix("/outline-bucket")
+        - traefik.http.routers.minio-api.tls.certresolver=leresolver
+        - traefik.http.routers.minio-api.service=minio-api-service
+        - traefik.http.services.minio-api-service.loadbalancer.server.port=9000
+
   outline:
     image: outlinewiki/outline:latest
     command: sh -c "yarn sequelize:migrate --env production-ssl-disabled && yarn start"
@@ -51,4 +67,4 @@ networks:
       name: DB_work
 
 volumes:
-  redis:
+  redis: null
