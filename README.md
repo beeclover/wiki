@@ -22,6 +22,7 @@ make install
   <tr>
     <td>MINIO_SECRET_KEY
     <td>MINIO_ROOT_PASSWORD
+</table>
 
 minio가 예전 버전의 이미지를 기준으로 환경변수를 만들어서 deprecated된 것들이 있다.
 `docker logs`에 친절히 안내해줘서 알게되었다.
