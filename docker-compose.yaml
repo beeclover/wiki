@@ -17,18 +17,18 @@ services:
       labels:
         - traefik.enable=true
         # console
-        - traefik.http.routers.minio.entrypoints=websecure
-        - traefik.http.routers.minio.rule=Host(`minio.wiki.beeclover.pro`)
-        - traefik.http.routers.minio.tls.certresolver=leresolver
-        - traefik.http.routers.minio.service=minio-service
-        - traefik.http.services.minio-service.loadbalancer.server.port=9001
+        - traefik.http.routers.work-202112__wiki-minio.entrypoints=websecure
+        - traefik.http.routers.work-202112__wiki-minio.rule=Host(`minio.wiki.beeclover.pro`)
+        - traefik.http.routers.work-202112__wiki-minio.tls.certresolver=leresolver
+        - traefik.http.routers.work-202112__wiki-minio.service=work-202112__wiki-minio-service
+        - traefik.http.services.work-202112__wiki-minio-service.loadbalancer.server.port=9001
         # api
-        - traefik.http.routers.minio-api.entrypoints=websecure
-        - traefik.http.routers.minio-api.rule=Host(`wiki.beeclover.pro`) &&
-          PathPrefix("/outline-bucket")
-        - traefik.http.routers.minio-api.tls.certresolver=leresolver
-        - traefik.http.routers.minio-api.service=minio-api-service
-        - traefik.http.services.minio-api-service.loadbalancer.server.port=9000
+        - traefik.http.routers.work-202112__wiki-minio-api.entrypoints=websecure
+        - traefik.http.routers.work-202112__wiki-minio-api.rule=Host(`wiki.beeclover.pro`)
+          && PathPrefix("/outline-bucket")
+        - traefik.http.routers.work-202112__wiki-minio-api.tls.certresolver=leresolver
+        - traefik.http.routers.work-202112__wiki-minio-api.service=work-202112__wiki-minio-api-service
+        - traefik.http.services.work-202112__wiki-minio-api-service.loadbalancer.server.port=9000
 
   outline:
     image: outlinewiki/outline:latest
@@ -47,10 +47,10 @@ services:
       labels:
         - traefik.enable=true
         ## HTTP Routers
-        - traefik.http.routers.202112__wiki.entrypoints=websecure
-        - traefik.http.routers.202112__wiki.rule=Host(`wiki.beeclover.pro`)
-        - traefik.http.routers.202112__wiki.tls.certresolver=leresolver
-        - traefik.http.services.202112__wiki.loadbalancer.server.port=3000
+        - traefik.http.routers.work-202112__wiki.entrypoints=websecure
+        - traefik.http.routers.work-202112__wiki.rule=Host(`wiki.beeclover.pro`)
+        - traefik.http.routers.work-202112__wiki.tls.certresolver=leresolver
+        - traefik.http.services.work-202112__wiki.loadbalancer.server.port=3000
   redis:
     image: redis
     volumes:
